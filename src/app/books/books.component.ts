@@ -1,23 +1,35 @@
-import { Component, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { BooksService } from '../services/books.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
   styleUrls: ['./books.component.css'],
 })
-
-export class BooksComponent {
+export class BooksComponent implements OnInit, OnDestroy {
   title = 'Mis Libros';
 
-  books = ['Algebra Lineal', 'Matematica Discreta', 'Estructura de Datos'];
+  books = [] as string[];
 
-  deleteBook(book: string) {
-    this.books = this.books.filter((b) => b !== book);
-  }
+  constructor(private service: BooksService) {}
+
+  private bookSubscription: Subscription;
 
   addBook(bookForm: any) {
     if (bookForm.invalid) return;
-    this.books.push(bookForm.value.title);
+    this.service.addBook(bookForm.value.title);
     bookForm.reset();
+  }
+
+  ngOnInit() {
+    this.books = this.service.listBooks();
+    this.bookSubscription = this.service.bookSubject.subscribe(() => {
+      this.books = this.service.listBooks();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.bookSubscription.unsubscribe();
   }
 }
