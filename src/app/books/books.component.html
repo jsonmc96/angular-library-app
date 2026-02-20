@@ -1,0 +1,18 @@
+<h1>Mis Libros Favoritos</h1>
+
+<form (ngSubmit)="addBook(bookForm)" #bookForm="ngForm">
+  <input
+    type="text"
+    name="title"
+    ngModel
+    placeholder="Título del libro"
+    required
+  />
+  <button type="submit">Agregar Libro</button>
+</form>
+
+<app-book
+  (bookClicked)="deleteBook(item)"
+  *ngFor="let item of books"
+  [book]="item"
+></app-book>
